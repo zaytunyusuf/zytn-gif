@@ -1,0 +1,51 @@
+-adding routing ;
+
+-post-routing.module.ts ;
+
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { PostListComponent } from './post/post-list/post-list.component';
+import { PostCreateComponent } from './post/post-created/post-create.component';
+
+const routes: Routes = [
+  {path:'', component: PostListComponent},
+  {path:'create', component: PostCreateComponent}
+
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+
+-app.component.html ;
+
+<app-header></app-header>
+
+<main>
+    <router-outlet></router-outlet>
+
+
+</main>
+
+
+
+-header-component.html ;
+
+
+<mat-toolbar color="primary" >
+    
+    <span><a routerLink="/"> my message </a> </span>
+
+    <ul>
+        <li>
+            <a routerLink="/create">new post</a>
+        </li>
+    </ul>
+
+
+
+
+
+</mat-toolbar>

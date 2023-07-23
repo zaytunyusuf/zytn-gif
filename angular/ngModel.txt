@@ -1,0 +1,44 @@
+
+-there are core tempelate binding features angular has ;
+.event binding ; like click button event
+.string interpolation ; {{newPost}}
+.property binding ; value 
+.two way binding ; ng model
+
+-ngmodel ;
+ - in ts ;
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-post-create',
+  templateUrl: './post-create.component.html',
+})
+export class PostCreateComponent {
+
+    enteredValue = '';
+    newPost = '';
+
+    // listening the events
+    onaddpost(){
+         
+     this.newPost  = this.enteredValue;
+     //this is this.enteredValue ; when you enter something after clicked you get output
+
+    }
+
+}
+
+-in html ;
+<textarea  rows="10" [(ngModel)]="enteredValue"></textarea>
+
+<button (click)="onaddpost()">save the post</button>
+
+<p>{{newPost}}</p>
+
+-app.modules.ts ;
+import { FormsModule } from '@angular/forms';
+
+imports: [
+    
+    FormsModule
+  ],

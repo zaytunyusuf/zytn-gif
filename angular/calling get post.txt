@@ -1,0 +1,142 @@
+-calling get post ;
+1. addpost to post create component .ts
+2.  getpost from post list component .ts 
+
+3. post service we are  connencting this 
+
+-in post service .ts ;
+
+import { Injectable } from '@angular/core';
+import { Post } from './post.model';
+import { Subject } from 'rxjs';
+
+//how to do angular aware ; 
+@Injectable({ providedIn: 'root' })
+
+export class PostsService {
+    private posts: Post[] = [];
+    private PostsUpdated = new Subject<Post[]>();
+    
+    //getting all posts from post model to post service
+
+    getPosts() {
+        return this.posts;
+    }
+
+    getPostUpdateListener() {
+        return this.PostsUpdated.asObservable();
+    }
+
+    //adding new posts
+
+    addPost(title: string, content: string) {
+        const post: Post = { title: title, content: content };
+        this.posts.push(post);
+        this.PostsUpdated.next([...this.posts]);
+    }
+}
+
+
+
+-in post list com .ts
+
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+import { Post } from '../post.model';
+import { PostsService } from '../post.service';
+import { Subscription } from 'rxjs';
+
+@Component({
+  selector: 'app-post-list',
+  templateUrl: './post-list.component.html',
+  styleUrls: ['./post-list.component.css']
+})
+export class PostListComponent implements OnInit, OnDestroy {
+  // posts = [
+  //     {title:'first post' , content:'this is first post content'},
+  //     {title:'second post' , content:'this is second post content'},
+  //     {title:'third post' , content:'this is third post content'}
+  // ];
+  posts: Post[] = [
+    { title: '', content: '' }
+  ];
+
+  private PostsSub: Subscription = new Subscription;
+
+  constructor(public PostsService: PostsService) { }
+
+  ngOnInit() {
+    this.posts = this.PostsService.getPosts();
+    this.PostsSub = this.PostsService.getPostUpdateListener()
+      .subscribe((posts: Post[]) => {
+        this.posts = posts;
+      });
+
+
+
+  }
+
+  ngOnDestroy(): void {
+    this.PostsSub.unsubscribe();
+  }
+}
+
+
+-in post create com .ts
+
+import { Component  } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { PostsService } from '../post.service';
+
+
+@Component({
+  selector: 'app-post-create',
+  templateUrl: './post-create.component.html',
+  styleUrls: ['./post-create.component.css']
+})
+
+
+export class PostCreateComponent {
+    enteredContent = '';
+    enteredTitle = '';
+
+    constructor (public  PostsService : PostsService){}
+  
+
+    // listening the events
+    onaddpost(form : NgForm){
+         if (form.invalid){
+          return;
+         }
+         
+
+         this.PostsService.addPost(form.value.title, form.value.content);
+    }
+
+
+
+}
+
+
+
+
+
+// export class PostCreateComponent1 {
+//     firstn = '';
+//     lastn ='';
+//     newPostf = '';
+//     newPostl = '';
+  
+
+//     onaddpostt(){
+         
+     
+       
+//         this.newPostf  = this.firstn;
+//         this.newPostl  = this.lastn;
+
+//     }
+
+
+
+// }

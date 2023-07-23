@@ -1,0 +1,310 @@
+-in app.com.cre.ts ;
+
+import { Component, OnInit  } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { PostsService } from '../post.service';
+import { Post } from '../post.model';
+
+import { ActivatedRoute, ParamMap } from '@angular/router';
+
+
+@Component({
+  selector: 'app-post-create',
+  templateUrl: './post-create.component.html',
+  styleUrls: ['./post-create.component.css']
+})
+
+
+export class PostCreateComponent implements OnInit {
+    enteredContent = '';
+    enteredTitle = '';
+    isLoading = false;
+    private mode = 'create';
+    private postId!: string;
+    private post!: Post;
+  PostCreateComponent: any;
+
+    constructor (public  PostsService : PostsService, public route: ActivatedRoute){}
+
+    ngOnInit(): void {
+      this.route.paramMap.subscribe((paramMap: ParamMap)=>{
+        if(paramMap.has('postId')){
+          this.mode = 'edit';
+          this.PostCreateComponent.postId = paramMap.get("postId");
+          this.isLoading = true;
+          this.PostCreateComponent.post = this.PostsService.getPost(this.postId)
+          .subscribe(postData => {
+            this.isLoading = false;
+            this.post = {id: postData._id, title : postData.title, content : postData.content};
+          });
+        }
+        else{
+
+          this.mode = 'create';
+          this.PostCreateComponent.postId = null;
+        }
+
+      });
+    }
+  
+
+    // listening the events
+    onSavepost(form : NgForm){
+         if (form.invalid){
+          return;
+         }
+         this.isLoading = true;
+         if(this.mode === 'create'){
+          this.PostsService.addPost(form.value.title, form.value.content);
+
+
+         } else{
+          this.PostsService.updatePost(this.postId,form.value.title, form.value.content);
+
+         }
+         
+
+         form.resetForm();
+    }
+
+
+
+}
+
+
+
+
+
+// export class PostCreateComponent1 {
+//     firstn = '';
+//     lastn ='';
+//     newPostf = '';
+//     newPostl = '';
+  
+
+//     onaddpostt(){
+         
+     
+       
+//         this.newPostf  = this.firstn;
+//         this.newPostl  = this.lastn;
+
+//     }
+
+
+
+// }
+
+
+-in app.com.create.html ;
+
+
+
+<!-- <h1>the post create component</h1> -->
+
+<!-- listening the events -->
+<mat-card>
+
+    <mat-spinner  *ngIf="isLoading"></mat-spinner>
+
+    <form (submit)="onSavepost(PostForm)" #PostForm="ngForm"  *ngIf="!isLoading">
+
+        <mat-form-field>
+            <input matInput type="text" name="title" [ngModel]="PostCreateComponent.post?.title" required minlength="3" placeholder="post title" required #title = "ngModel">
+            <mat-error *ngIf="title.invalid">please enter a post title.</mat-error>
+        </mat-form-field>
+    <mat-form-field>
+    <textarea matInput rows="6" name="content"  [ngModel]="PostCreateComponent.post?.content" placeholder="post content" required #content = "ngModel"></textarea> 
+    <mat-error *ngIf="content.invalid">please enter a post title.</mat-error>
+
+    </mat-form-field>
+    <button
+     mat-raised-button 
+     color="warn"
+     type="submit">save the post</button>
+
+    </form>
+
+    
+
+</mat-card>
+
+
+
+
+
+
+
+
+<!-- <table>
+    <tr>
+        <td><input type="text" [(ngModel)]="firstn" >
+        </td>
+        <td><input type="text" [(ngModel)]="lastn" >
+        </td>
+    </tr>
+    <button (click)="onaddpostt()">save the post</button>
+</table>
+
+<tr>
+    <td><p>firstname is :{{newPostf}}</p>
+    </td>
+</tr>
+<tr>
+    <td><p>lastname is :{{newPostl}}</p>
+    </td>
+</tr> -->
+
+
+
+
+
+
+-in app.service.ts ;
+
+
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+import { Post } from './post.model';
+import { Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { response } from 'express';
+import { Router } from '@angular/router';
+
+
+//how to do angular aware ; 
+@Injectable({ providedIn: 'root' })
+
+export class PostsService {
+    private posts: Post[] = [];
+    private PostsUpdated = new Subject<Post[]>();
+
+    constructor(private http:HttpClient ,private router: Router){}
+    
+    //getting all posts from post model to post service
+
+    getPosts() {
+         this.http.get<{message:string,posts:any}>("http://localhost:3000/api/posts")
+         .pipe(map((postData)=>{
+            return postData.posts.map(post =>{
+                return{
+                    title:post.title,
+                    content:post.content,
+                    id:post._id
+                };
+
+            });
+
+         }))
+
+
+
+         .subscribe((transformedPosts)=>{
+            this.posts = transformedPosts;
+            this.PostsUpdated.next([...this.posts]);
+        //subscribe takes three arguments ; new data , error , when it completes
+         });
+    }
+
+    getPostUpdateListener() {
+        return this.PostsUpdated.asObservable();
+    }
+
+    getPost (id:string){
+        return this.http.get<{_id: string , title: string , content: string}>
+        ("http://localhost:3000/api/posts/" + id);
+    }
+
+    //adding new posts
+
+    addPost(title: string, content: string) {
+        const post: Post = {id:'', title: title, content: content };
+        this.http.post<{ message:string,postId : string}>('http://localhost:3000/api/posts',post)
+        .subscribe(responseData=>{
+            const id = responseData.postId;
+            post.id = id;
+            this.posts.push(post);
+            this.PostsUpdated.next([...this.posts]);
+            this.router.navigate(["/"]);
+    });
+  }
+
+  updatePost(id:string, title:string, content: string){
+    const post : Post = {id:id , title : title ,  content: content};
+    this.http.put("http://localhost:3000/api/posts/" + id,post)
+    .subscribe(response => {
+        const updatedPosts = [...this.posts];
+        const oldPostIndex = updatedPosts.findIndex(p => p.id === post.id);
+        updatedPosts[oldPostIndex] = post;
+        this.posts = updatedPosts;
+        this.PostsUpdated.next([...this.posts])
+    });
+  }
+
+
+
+  deletePost(postId: string){
+    this.http.delete("http://localhost:3000/api/posts/" + postId)
+    .subscribe(()=>{
+        const updatedPosts = this.posts.filter(post => post.id !== postId);
+        this.posts  = updatedPosts;
+        this.PostsUpdated.next([...this.posts]);
+    })
+    
+  }
+}
+
+
+
+-in app.module.ts ;
+
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatInputModule  } from '@angular/material/input';
+import {  MatCardModule } from '@angular/material/card';
+import {  MatButtonModule } from '@angular/material/button';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+
+import {HttpClientModule} from '@angular/common/http';
+
+
+
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { PostCreateComponent } from './post/post-created/post-create.component';
+import { HeaderComponent } from './header/header.component';
+import { PostListComponent } from './post/post-list/post-list.component';
+
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    PostCreateComponent,
+    HeaderComponent,
+    PostListComponent
+
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule,
+    BrowserAnimationsModule,
+    MatInputModule,
+    MatCardModule,
+    MatButtonModule,
+    MatToolbarModule,
+    MatExpansionModule,
+    MatProgressSpinnerModule,
+    HttpClientModule
+
+
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }

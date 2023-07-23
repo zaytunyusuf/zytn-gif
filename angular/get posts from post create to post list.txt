@@ -1,0 +1,64 @@
+- get posts from post create to post list ;
+
+-post service .ts ;
+
+import { Injectable } from '@angular/core';
+import {Post} from './post.model';
+
+
+//how to do angular aware ; 
+@Injectable({providedIn : 'root'})
+
+export class PostsService {
+    private posts : Post[] = []
+
+    //getting all posts from post model to post service
+
+    getPosts (){
+        return [...this.posts];
+    }
+
+    //adding new posts
+
+    addPost(title:string, content:string){
+        const post : Post =  {title : title , content : content};
+        this.posts.push(post);
+        }
+}
+
+
+
+
+-post list component .ts ;
+
+import { Component , Input } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+import { Post } from '../post.model';
+import { PostsService } from '../post.service';
+
+
+@Component({
+  selector: 'app-post-list',
+  templateUrl: './post-list.component.html', 
+  styleUrls: ['./post-list.component.css']
+})
+export class PostListComponent {
+    // posts = [
+    //     {title:'first post' , content:'this is first post content'},
+    //     {title:'second post' , content:'this is second post content'},
+
+    //     {title:'third post' , content:'this is third post content'}
+
+    // ];
+
+    @Input() posts : Post[]= [
+      {title : '' ,  content : ''}
+    ];
+
+    constructor (public PostsService : PostsService){
+
+    }
+}
+
+
+

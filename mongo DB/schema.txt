@@ -1,0 +1,14 @@
+-import schema and add module ;
+
+in post.js ;
+
+const mongoose = require('mongoose');
+
+const postSchema = mongoose.Schema({
+    title : {type:String ,required:true},
+    content : {type:String ,required:true}
+});
+
+
+//this mongoose model help to use outside of this model file
+module.exports = mongoose.model('Post', postSchema);

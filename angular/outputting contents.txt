@@ -1,0 +1,33 @@
+
+outputting contents ;
+-in typescript;
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-post-create',
+  templateUrl: './post-create.component.html',
+})
+export class PostCreateComponent {
+
+
+    newPost = '';
+
+   
+    onaddpost(){
+        
+        this.newPost  = 'the user\'s post';
+    }
+
+}
+
+-in html ; output by tags
+<textarea  rows="10"></textarea>
+<button (click)="onaddpost()">save the post</button>
+
+<p>{{newPost}}</p>
+
+-in html ; output by property
+<textarea  rows="10" value = "newPost"></textarea>
+<button (click)="onaddpost()">save the post</button>
+
+<p>{{newPost}}</p>

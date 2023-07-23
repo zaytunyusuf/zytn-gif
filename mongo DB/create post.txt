@@ -1,0 +1,80 @@
+-create post ; result when add input front end angular you look out put in angular and
+               server node js with id
+
+
+- in app.js ;
+
+const express = require('express');
+const bodyparser = require('body-parser');
+
+const Post = require('./models/post');
+
+
+const app = express();
+
+app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({extended: false}));
+
+
+
+//core 
+
+app.use((req,res,next)=>{
+
+    //these are headers
+    res.setHeader('Access-Control-Allow-Origin' , '*');
+    //this means the incoming request may have these extra headers
+    res.setHeader('Access-Control-Allow-Headers','Origin, X-Requested-With,Content-Type ,Accept');
+    res.setHeader("Access-Control-Allow-Methods", 'GET, POST, PATCH, DELETE, OPTIONS');
+
+    next();
+});
+
+// Tth71Zo0srymvEdc
+
+//bodyparsêr
+
+app.post("/api/posts",(req , res , next)=>{
+
+    const post = new Post({
+        title:req.body.title,
+        content:req.body.content
+    });
+    console.log(post);
+
+    res.status(201).json({
+        message: "post added successfully"
+    });
+
+});
+
+
+app.get("/api/posts",(req , res , next)=>{
+    const posts = [
+        {id:'fdsf2432',title:'first server side post' , content :'this is coming from the server'},
+        {id:'fsfs1212',title:'second server side post' , content :'this is coming from the server!'},
+
+    ];
+    res.status(200).json({
+        message: 'posts fetched successfully',
+        posts:posts
+
+    });
+
+});
+
+module.exports = app;
+
+
+-in post.js
+
+const mongoose = require('mongoose');
+
+const postSchema = mongoose.Schema({
+    title : {type:String ,required:true},
+    content : {type:String ,required:true}
+});
+
+
+//this mongoose model help to use outside of this model file
+module.exports = mongoose.model('Post', postSchema);

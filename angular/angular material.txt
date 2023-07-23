@@ -1,0 +1,8 @@
+-install angular material ;
+npm install --save @angular/material
+-to get latest material ; npm install -g @angular/cli
+ 
+-to install angular material ; ng add @angular/material
+
+-to add import  go to web ; angular/material /io -component- input - api -copy the import 
+     -then add app.module.ts

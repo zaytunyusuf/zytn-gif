@@ -1,0 +1,94 @@
+-adding forms ;
+
+-in post-create compo.ts
+
+import { Component , EventEmitter , Output } from '@angular/core';
+import { Post } from '../post.model';
+import { NgForm } from '@angular/forms';
+
+
+@Component({
+  selector: 'app-post-create',
+  templateUrl: './post-create.component.html',
+  styleUrls: ['./post-create.component.css']
+})
+
+
+export class PostCreateComponent {
+    enteredContent = '';
+    enteredTitle = '';
+    @Output()  postCreated = new EventEmitter<Post>();
+  
+
+    // listening the events
+    onaddpost(form : NgForm){
+         if (form.invalid){
+          return;
+         }
+         const  post : Post = {
+          title : form.value.title,
+          content :form.value.content
+
+
+         };
+         this.postCreated.emit(post);
+    }
+
+
+
+}
+
+
+
+
+
+// export class PostCreateComponent1 {
+//     firstn = '';
+//     lastn ='';
+//     newPostf = '';
+//     newPostl = '';
+  
+
+//     onaddpostt(){
+         
+     
+       
+//         this.newPostf  = this.firstn;
+//         this.newPostl  = this.lastn;
+
+//     }
+
+
+
+// }
+
+
+
+-in post create com in html ;
+
+<!-- <h1>the post create component</h1> -->
+
+<!-- listening the events -->
+<mat-card>
+
+    <form (submit)="onaddpost(PostForm)" #PostForm="ngForm">
+
+        <mat-form-field>
+            <input matInput type="text" name="title" ngModel required minlength="3"  #title = "ngModel">
+            <mat-error *ngIf="title.invalid">please enter a post title.</mat-error>
+        </mat-form-field>
+    <mat-form-field>
+    <textarea matInput rows="6" name="content" ngModel required #content = "ngModel"></textarea> 
+    <mat-error *ngIf="content.invalid">please enter a post title.</mat-error>
+
+    </mat-form-field>
+    <button
+     mat-raised-button 
+     color="warn"
+     type="submit">save the post</button>
+
+    </form>
+
+    
+
+</mat-card>

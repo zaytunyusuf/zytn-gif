@@ -1,0 +1,171 @@
+
+-in expansion ;
+-in ts
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-post-list',
+  templateUrl: './post-list.component.html', 
+  styleUrls: ['./post-list.component.css']
+})
+export class PostListComponent {
+    posts = [
+        {title:'first post' , content:'this is first post content'},
+        {title:'second post' , content:'this is second post content'},
+
+        {title:'third post' , content:'this is third post content'}
+
+    ];
+}
+
+-in ts ;
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-post-list',
+  templateUrl: './post-list.component.html', 
+  styleUrls: ['./post-list.component.css']
+})
+export class PostListComponent {
+    // posts = [
+    //     {title:'first post' , content:'this is first post content'},
+    //     {title:'second post' , content:'this is second post content'},
+
+    //     {title:'third post' , content:'this is third post content'}
+
+    // ];
+    posts=[];
+}
+
+
+
+-in html
+
+<mat-accordion>
+     <mat-expansion-panel>
+        <mat-expansion-panel-header>
+            expansion title!
+        </mat-expansion-panel-header>
+        <p>i am in an expansion panel</p>
+     </mat-expansion-panel>
+
+
+</mat-accordion>
+
+-in html ;
+
+<mat-accordion multi="true">
+     <mat-expansion-panel *ngFor="let post of posts">
+        <mat-expansion-panel-header>
+          {{post.title}}
+        </mat-expansion-panel-header>
+        <p>{{post.content}}</p>
+     </mat-expansion-panel>
+
+
+</mat-accordion>
+
+-in html 
+
+<mat-accordion multi="true" *ngIf="posts.length > 0">
+     <!-- <mat-expansion-panel *ngFor="let post of posts" >
+        <mat-expansion-panel-header>
+          {{post.title}}
+        </mat-expansion-panel-header>
+        <p>{{post.content}}</p>
+     </mat-expansion-panel> -->
+
+
+</mat-accordion>
+
+<p class=" info-text mat-body-1" *ngIf="posts.length <= 0">no posts yet</p>
+
+- in css
+
+:host{
+    margin-top: 1rem;
+    display: block;
+}
+
+-in css ;
+
+:host{
+    margin-top: 1rem;
+    display: block;
+}
+
+.info-text{
+    text-align: center;
+}
+
+
+
+-in post-create.component.css
+
+mat-form-field,
+textarea{
+    width: 80%;
+    margin: auto;
+
+}
+
+
+-in app.module.ts
+
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatInputModule  } from '@angular/material/input';
+import {  MatCardModule } from '@angular/material/card';
+import {  MatButtonModule } from '@angular/material/button';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatExpansionModule} from '@angular/material/expansion';
+
+
+
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { PostCreateComponent } from './post/post-created/post-create.component';
+import { HeaderComponent } from './header/header.component';
+import { PostListComponent } from './post/post-list/post-list.component';
+
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    PostCreateComponent,
+    HeaderComponent,
+    PostListComponent
+
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule,
+    BrowserAnimationsModule,
+    MatInputModule,
+    MatCardModule,
+    MatButtonModule,
+    MatToolbarModule,
+    MatExpansionModule
+
+
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+
+
+-in app.comp.css
+
+main{
+    margin-top: 1rem;
+    width: 80%;
+    margin: auto;
+}
+

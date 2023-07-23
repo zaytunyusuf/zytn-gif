@@ -1,0 +1,44 @@
+-styling links ;
+
+-header.com.css ;
+
+
+ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+
+
+a {
+    text-decoration: none;
+    color: white;
+}
+
+.spacer{
+    flex: 1 1 auto;
+}
+
+
+-header.com.html ;
+
+
+<mat-toolbar color="primary" >
+    
+    <span><a routerLink="/"> my message </a> </span>
+
+    <span class="spacer"></span>
+
+    <ul>
+        <li>
+            <a mat-button  routerLink="/create"  routerLinkActive="mat-accent">new post</a>
+        </li>
+    </ul>
+
+
+
+
+
+</mat-toolbar>
+

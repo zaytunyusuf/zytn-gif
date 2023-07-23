@@ -1,0 +1,7 @@
+
+-go to website ; mongodb.com
+-then search ; mongodb atlas /clusters 
+-then create account
+
+-email and password of mongodb atlas; zaytunyusuf311@gmail.com
+                            pass ; zytnysf11

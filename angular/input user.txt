@@ -1,0 +1,53 @@
+
+-input user
+-in ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-post-create',
+  templateUrl: './post-create.component.html',
+})
+export class PostCreateComponent {
+
+
+    newPost = '';
+
+    // listening the events
+    onaddpost(postInput : HTMLTextAreaElement){
+        console.dir(postInput);
+       //cônsole.dir ; gives you all objects in js
+        this.newPost  = 'the user\'s post';
+
+    }
+
+}
+
+-in html
+<textarea  rows="10" [value]="newPost" #postInput></textarea>
+
+<button (click)="onaddpost(postInput)">save the post</button>
+
+<p>{{newPost}}</p>
+
+-in ts ;
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-post-create',
+  templateUrl: './post-create.component.html',
+})
+export class PostCreateComponent {
+
+
+    newPost = '';
+
+    // listening the events
+    onaddpost(postInput : HTMLTextAreaElement){
+       this.newPost  = postInput.value;
+       //postInput.value ; when you enter something in textarea  after clicked 
+         you get output
+
+    }
+
+}

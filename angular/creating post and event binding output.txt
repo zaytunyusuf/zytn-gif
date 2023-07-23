@@ -1,0 +1,152 @@
+-creating posts and event binding  , output
+
+-in post-create-com.ts
+
+import { Component , EventEmitter , Output } from '@angular/core';
+
+@Component({
+  selector: 'app-post-create',
+  templateUrl: './post-create.component.html',
+  styleUrls: ['./post-create.component.css']
+})
+
+
+export class PostCreateComponent {
+    enteredContent = '';
+    enteredTitle = '';
+    @Output()  postCreated = new EventEmitter();
+  
+
+    // listening the events
+    onaddpost(){
+         const  post =  {
+          title : this.enteredTitle ,
+          content : this.enteredContent
+
+
+         };
+         this.postCreated.emit(post);
+    }
+
+
+
+}
+
+
+
+
+
+// export class PostCreateComponent1 {
+//     firstn = '';
+//     lastn ='';
+//     newPostf = '';
+//     newPostl = '';
+  
+
+//     onaddpostt(){
+         
+     
+       
+//         this.newPostf  = this.firstn;
+//         this.newPostl  = this.lastn;
+
+//     }
+
+
+
+// }
+
+
+
+-in post create-comp.html
+
+<!-- <h1>the post create component</h1> -->
+
+<!-- listening the events -->
+<mat-card>
+
+    <mat-form-field>
+        <input matInput type="text"  [(ngModel)]="enteredTitle">
+    </mat-form-field>
+<mat-form-field>
+<textarea matInput rows="6" [(ngModel)]="enteredContent"></textarea> 
+</mat-form-field>
+<button
+ mat-raised-button 
+ color="warn"
+ (click)="onaddpost()">save the post</button>
+
+</mat-card>
+
+
+
+-in app.com.ts
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  storedPosts: any = [];
+
+  onPostAdded(post) {
+    this.storedPosts.push(post);
+  }
+}
+
+
+-in app.com.html
+
+
+<app-header></app-header>
+
+<main>
+    <app-post-create (postCreated)="onPostAdded($event)"></app-post-create>
+    <app-post-list [posts]="storedPosts"></app-post-list>
+
+
+</main>
+
+
+-in post-list-com.ts
+
+import { Component , Input } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+
+@Component({
+  selector: 'app-post-list',
+  templateUrl: './post-list.component.html', 
+  styleUrls: ['./post-list.component.css']
+})
+export class PostListComponent {
+    // posts = [
+    //     {title:'first post' , content:'this is first post content'},
+    //     {title:'second post' , content:'this is second post content'},
+
+    //     {title:'third post' , content:'this is third post content'}
+
+    // ];
+
+    @Input() posts = [
+      {title : '' ,  content : ''}
+    ];
+}
+
+
+-in post-list-comp.html
+
+<mat-accordion multi="true" *ngIf="posts.length > 0">
+     <mat-expansion-panel *ngFor="let post of posts" >
+        <mat-expansion-panel-header>
+          {{post.title}}
+        </mat-expansion-panel-header>
+        <p>{{post.content}}</p>
+     </mat-expansion-panel>
+
+
+</mat-accordion>
+
+<p class=" info-text mat-body-1" *ngIf="posts.length <= 0">no posts yet</p>

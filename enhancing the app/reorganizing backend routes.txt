@@ -1,0 +1,148 @@
+-reorganizing backend routes ; when you enter inputs in angular app you can make 
+                              edit and delete
+
+
+- in /routes/posts.js ;
+
+const express = require('express');
+
+const Post = require('../models/post');
+
+
+const router = express.Router();
+
+router.post("",(req , res , next)=>{
+
+    const post = new Post({
+        title:req.body.title,
+        content:req.body.content
+    });
+
+    post.save().then(createdPost =>{
+        res.status(201).json({
+            message: "post added successfully",
+            postId:createdPost._id
+
+        });
+        });
+
+
+
+});
+
+
+router.put("/:id",(req,res,next)=>{
+    const post = new Post({
+        _id : req.body.id,
+        title : req.body.title,
+        content : req.body.content
+
+    });
+    Post.updateOne({_id: req.params.id},post).then(result=>{
+        console.log(result);
+        res.status(200).json({message: "update successful"});
+    });
+});
+
+
+router.get("",(req , res , next)=>{
+    Post.find()
+    .then(documents =>{
+        res.status(200).json({
+            message: 'posts fetched successfully',
+            posts:documents
+    
+        });
+        });
+    // const posts = [
+    //     {id:'fdsf2432',title:'first server side post' , content :'this is coming from the server'},
+    //     {id:'fsfs1212',title:'second server side post' , content :'this is coming from the server!'},
+
+    // ];
+    
+
+});
+
+
+router.get("/:id",(req, res, next)=>{
+    Post.findById(req.params.id).then(post => {
+        if(post){
+            res.status(200).json(post);
+
+
+        } else{
+            res.status(404).json({message:'post not found'});
+
+        }
+
+    })
+
+});
+
+router.delete('/:id',(req,res,next)=>{
+    Post.deleteOne({_id:req.params.id}).then(result=>{
+        console.log(result);
+        res.status(200).json({message:'post deleted'});
+
+
+    });
+
+});
+
+module.exports = router;
+
+
+
+
+
+- in app .js ;
+
+const express = require('express');
+const bodyparser = require('body-parser');
+const mongoose = require('mongoose');
+
+
+const postsRoutes = require('./routes/posts');
+
+
+
+const app = express();
+
+mongoose.connect("mongodb+srv://zytn:Tth71Zo0srymvEdc@cluster4.bqvsfv1.mongodb.net/node-angular?retryWrites=true&w=majority")
+.then(()=>{
+    console.log('connected to database');
+})
+.catch(()=>{
+    console.log('connection failed');
+
+
+});
+
+
+app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({extended: false}));
+
+
+
+//core 
+
+app.use((req,res,next)=>{
+
+    //these are headers
+    res.setHeader('Access-Control-Allow-Origin' , '*');
+    //this means the incoming request may have these extra headers
+    res.setHeader('Access-Control-Allow-Headers','Origin, X-Requested-With,Content-Type ,Accept');
+    res.setHeader("Access-Control-Allow-Methods", 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
+
+    next();
+});
+
+// Tth71Zo0srymvEdc
+
+//bodyparsêr
+
+
+app.use("/api/posts",postsRoutes);
+
+
+module.exports = app;

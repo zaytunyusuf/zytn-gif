@@ -1,0 +1,105 @@
+-adding angulâr ; when enter input angular app thê output ưill look ; 
+server/terminal and angular app
+
+- in app.js ;
+
+const express = require('express');
+const bodyparser = require('body-parser');
+
+
+const app = express();
+
+app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({extended: false}));
+
+//core 
+
+app.use((req,res,next)=>{
+
+    //these are headers
+    res.setHeader('Access-Control-Allow-Origin' , '*');
+    //this means the incoming request may have these extra headers
+    res.setHeader('Access-Control-Allow-Headers','Origin, X-Requested-With,Content-Type ,Accept');
+    res.setHeader("Access-Control-Allow-Methods", 'GET, POST, PATCH, DELETE, OPTIONS');
+
+    next();
+});
+
+//bodyparsêr
+
+app.post("/api/posts",(req , res , next)=>{
+
+    const post = req.body;
+    console.log(post);
+
+    res.status(201).json({
+        message: "post added successfully"
+    });
+
+});
+
+
+app.get("/api/posts",(req , res , next)=>{
+    const posts = [
+        {id:'fdsf2432',title:'first server side post' , content :'this is coming from the server'},
+        {id:'fsfs1212',title:'second server side post' , content :'this is coming from the server!'},
+
+    ];
+    res.status(200).json({
+        message: 'posts fetched successfully',
+        posts:posts
+
+    });
+
+});
+
+module.exports = app;
+
+- in post.server.js ;
+
+
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+import { Post } from './post.model';
+import { Subject } from 'rxjs';
+
+//how to do angular aware ; 
+@Injectable({ providedIn: 'root' })
+
+export class PostsService {
+    private posts: Post[] = [];
+    private PostsUpdated = new Subject<Post[]>();
+
+    constructor(private http:HttpClient){}
+    
+    //getting all posts from post model to post service
+
+    getPosts() {
+         this.http.get<{message:string,posts:Post[]}>("http://localhost:3000/api/posts")
+         .subscribe((postData)=>{
+            this.posts = postData.posts;
+            this.PostsUpdated.next([...this.posts]);
+        //subscribe takes three arguments ; new data , error , when it completes
+         });
+    }
+
+    getPostUpdateListener() {
+        return this.PostsUpdated.asObservable();
+    }
+
+    //adding new posts
+
+    addPost(title: string, content: string) {
+        const post: Post = {id:'', title: title, content: content };
+        this.http.post<{ message:string}>('http://localhost:3000/api/posts',post)
+        .subscribe(responseData=>{
+            console.log(responseData.message);
+            this.posts.push(post);
+            this.PostsUpdated.next([...this.posts]);
+    });
+  }
+}
+
+
+

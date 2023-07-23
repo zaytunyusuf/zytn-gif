@@ -1,0 +1,99 @@
+-how to dísplayjson to brówser ;
+
+-in server .js ;
+const http = require('http');
+
+const app = require('./courses/backend/app');
+//appL ; this variable listening from incoming requests
+
+const port = process.env.PORT || 3000;
+
+app.set('port' , port);
+
+const server = http.createServer(app);
+
+server.listen(port);
+
+
+-in server1.js ;
+
+
+const app = require("./backend/app");
+const debug = require ('debug')('node-angular');
+const http = require("http");
+
+
+
+const normalizePort = val => {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+};
+
+const onError = error => {
+  if (error.syscall !== "listen") {
+    throw error;
+  }
+  const bind = typeof port === "string" ? "pipe " + port : "port " + port;
+  switch (error.code) {
+    case "EACCES":
+      console.error(bind + " requires elevated privileges");
+      process.exit(1);
+      break;
+    case "EADDRINUSE":
+      console.error(bind + " is already in use");
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+};
+
+const onListening = () => {
+  const addr = server.address();
+  const bind = typeof port === "string" ? "pipe " + port : "port " + port;
+  debug("Listening on " + bind);
+};
+
+const port = normalizePort(process.env.PORT || "3000");
+app.set("port", port);
+
+const server = http.createServer(app);
+server.on("error", onError);
+server.on("listening", onListening);
+server.listen(port);
+
+
+-in app .js ;
+const express = require('express');
+
+const app = express();
+
+
+
+app.use("/api/posts",(req , res , next)=>{
+    const posts = [
+        {id:'fdsf2432',title:'first server side post' , content :'this is coming from the server'},
+        {id:'fsfs1212',title:'second server side post' , content :'this is coming from the server!'},
+
+    ];
+//you see this json á text in browser
+    res.status(200).json({
+        message: 'posts fetched successfully',
+        posts:posts
+
+    });
+
+});
+
+module.exports = app;
